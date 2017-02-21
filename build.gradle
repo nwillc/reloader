@@ -1,0 +1,37 @@
+
+apply plugin: 'java'
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile 'org.slf4j:slf4j-api:1.7.21'
+
+    testCompile 'junit:junit:4.12'
+}
+
+group = 'com.github.nwillc'
+version = '0.0.1'
+targetCompatibility = '1.8'
+sourceCompatibility = '1.8'
+
+test {
+    maxParallelForks 4
+
+    beforeTest { descriptor ->
+        logger.lifecycle('\tRunning ' + descriptor.className + '.' + descriptor.name)
+    }
+
+    afterSuite { descriptor, result ->
+        if (descriptor.parent == null) {
+            logger.lifecycle('\tTests run: ' + result.testCount
+                    + ', Failures: ' + result.failedTestCount
+                    + ', Skipped: ' + result.skippedTestCount)
+        }
+    }
+
+    testLogging {
+        exceptionFormat 'full'
+    }
+}
