@@ -9,26 +9,26 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
-public class FileFinderTest extends UtilityClassContract {
+public class FileUtilsTest extends UtilityClassContract {
 
     @Override
     public Class<?> getClassToTest() {
-        return FileFinder.class;
+        return FileUtils.class;
     }
 
     @Test
     public void testLs() throws Exception {
-        Stream<Path> files = FileFinder.ls(Paths.get("./src/test/resources"), ".*\\.txt");
+        Stream<Path> files = FileUtils.ls(Paths.get("./src/test/resources"), ".*\\.txt");
         assertThat(files.count()).isEqualTo(3);
 
-        files = FileFinder.ls(Paths.get("./src/test/resources"), ".*blah\\.txt");
+        files = FileUtils.ls(Paths.get("./src/test/resources"), ".*blah\\.txt");
         assertThat(files.count()).isEqualTo(1);
     }
 
     @Test
     public void testFileFinder() throws Exception {
 
-        final String newest = FileFinder.findNewest(Paths.get("./src/test/resources"), "foo-.*\\.txt");
+        final String newest = FileUtils.findNewest(Paths.get("./src/test/resources"), "foo-.*\\.txt");
 
         assertThat(newest).isNotNull();
         assertThat(newest).isEqualTo("foo-1.2.blah.txt");
