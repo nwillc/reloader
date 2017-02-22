@@ -6,15 +6,26 @@ repositories {
 }
 
 dependencies {
-    compile 'org.slf4j:slf4j-api:1.7.21'
+    compile 'org.slf4j:slf4j-api:1.7.21',
+            'org.tinylog:tinylog:' + tiny_log_version
 
-    testCompile 'junit:junit:4.12'
+    runtime 'org.tinylog:slf4j-binding:' + tiny_log_version
+
+    testCompile 'com.github.nwillc:jdk_contract_tests:' + jdk_contract_tests_version,
+            'org.assertj:assertj-core:' + assertj_version,
+            'junit:junit:4.12'
 }
 
 group = 'com.github.nwillc'
 version = '0.0.1'
 targetCompatibility = '1.8'
 sourceCompatibility = '1.8'
+
+compileJava {
+    options.compilerArgs += ['-XDignore.symbol.file']
+    options.fork = true 
+    options.forkOptions.executable = 'javac' 
+}
 
 test {
     maxParallelForks 4
