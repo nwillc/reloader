@@ -12,6 +12,7 @@
  * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ *
  */
 
 package com.github.nwillc.reloader;
@@ -24,6 +25,7 @@ import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.List;
 
 public final class Reloader {
@@ -35,41 +37,46 @@ public final class Reloader {
 
     private Reloader() {
     }
-    
+
     public static void onSignal(final String signalName) {
         Signal sig = null;
         try {
             final Class<?> aClass = Class.forName(Signal.class.getCanonicalName());
             final Constructor<?> cons = aClass.getConstructor(String.class);
-            sig = (Signal)cons.newInstance(signalName);
+            sig = (Signal) cons.newInstance(signalName);
         } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException
                 | InstantiationException | InvocationTargetException e) {
             e.printStackTrace();
         }
         if (sig != null) {
             Signal.handle(sig, signal -> {
-                try {
-                    restartApplication(null);
-                } catch (IOException e) {
-                    Logger.error(e, "Failed to restart");
-                }
+                restartApplication(null);
             });
         }
     }
 
-    /**
-     * Restart the current Java application
-     *
-     * @param runBeforeRestart some custom code to be run before restarting
-     * @throws IOException
-     */
-    public static void restartApplication(Runnable runBeforeRestart) throws IOException {
+    static List<String> newCommandLine(List<String> vmArgs, List<String> cmdArgs) {
+        final List<String> newCommandLine = new ArrayList<>();
+        newCommandLine.add(System.getProperty("java.home") + "/bin/java");
+        vmArgs.stream().filter(s -> !s.equals("-agentlib")).forEach(newCommandLine::add);
+        if (cmdArgs.get(0).endsWith(".jar")) {
+            newCommandLine.add("-jar");
+        }
+        cmdArgs.stream().forEach(newCommandLine::add);
+        return newCommandLine;
+    }
+
+    public static void restartApplication(Runnable runBeforeRestart) {
+        restartApplication(runBeforeRestart, ManagementFactory.getRuntimeMXBean().getInputArguments());
+    }
+
+    public static void restartApplication(Runnable runBeforeRestart, List<String> vmArguments) {
         try {
             // java binary
             String java = System.getProperty("java.home") + "/bin/java";
 
             // vm arguments
-            List<String> vmArguments = ManagementFactory.getRuntimeMXBean().getInputArguments();
+
             StringBuilder vmArgsOneLine = new StringBuilder();
             for (String arg : vmArguments) {
                 // if it's the agent argument : we ignore it otherwise the
@@ -81,7 +88,7 @@ public final class Reloader {
             }
 
             // init the command to execute, add the vm args
-            final StringBuffer cmd = new StringBuffer( java + " " + vmArgsOneLine);
+            final StringBuffer cmd = new StringBuffer(java + " " + vmArgsOneLine);
 
             // program main and program arguments
             String[] mainCommand = System.getProperty(SUN_JAVA_COMMAND).split(" ");
@@ -121,7 +128,7 @@ public final class Reloader {
             System.exit(0);
         } catch (Exception e) {
             // something went wrong
-            throw new IOException("Error while trying to restart the application", e);
+            throw new RuntimeException("Error while trying to restart the application", e);
         }
     }
 }

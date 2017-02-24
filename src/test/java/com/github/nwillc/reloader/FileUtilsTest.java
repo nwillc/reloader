@@ -17,20 +17,25 @@ public class FileUtilsTest extends UtilityClassContract {
     }
 
     @Test
+    public void testToPattern() throws Exception {
+       assertThat(FileUtils.toPattern(Paths.get("../libs/foo-1.0-standard.jar"))).isEqualTo("foo.+\\.jar");
+    }
+
+    @Test
     public void testLs() throws Exception {
-        Stream<Path> files = FileUtils.ls(Paths.get("./src/test/resources"), ".*\\.txt");
+        Stream<Path> files = FileUtils.ls(Paths.get("./src/test/resources"), ".*\\.jar");
         assertThat(files.count()).isEqualTo(3);
 
-        files = FileUtils.ls(Paths.get("./src/test/resources"), ".*blah\\.txt");
+        files = FileUtils.ls(Paths.get("./src/test/resources"), ".*blah\\.jar");
         assertThat(files.count()).isEqualTo(1);
     }
 
     @Test
     public void testFileFinder() throws Exception {
-
-        final String newest = FileUtils.findNewest(Paths.get("./src/test/resources"), "foo-.*\\.txt");
+        String pattern = FileUtils.toPattern(Paths.get("foo.jar"));
+        final String newest = FileUtils.findNewest(Paths.get("./src/test/resources"), pattern);
 
         assertThat(newest).isNotNull();
-        assertThat(newest).isEqualTo("foo-1.2.blah.txt");
+        assertThat(newest).isEqualTo("foo-1.2.blah.jar");
     }
 }
