@@ -1,8 +1,7 @@
 
 # Reloader
 
-A java package providing reloading and upgrading for java applications.
+A java package providing reloading and upgrading for Java applications.
 
-[javadoc](javadoc/)
-
+See the [homepage](https://nwillc.github.io/reloader).
 
