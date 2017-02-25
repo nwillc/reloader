@@ -57,7 +57,7 @@ task sourceJar(type: Jar) {
     from 'src/main/java'
 }
 
-task javadocJar(type: Jar) {
+task javadocJar(type: Jar, dependsOn: javadoc) {
     from 'build/docs/javadoc'
 }
 
@@ -75,7 +75,7 @@ publishing {
     }
 }
 
-task publishJavadoc(type: Copy) {
+task publishJavadoc(type: Copy, dependsOn: javadoc) {
     from('build/docs/javadoc')
     into('docs/javadoc')
 }

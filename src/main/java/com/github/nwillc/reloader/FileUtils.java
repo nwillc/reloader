@@ -51,20 +51,19 @@ public final class FileUtils {
      * @param path  Path to the directory
      * @param pattern The regex pattern to match.
      * @return The files that match.
-     * @throws IOException
+     * @throws IOException If the path can not be walked.
      */
     public static Stream<Path> ls(Path path, String pattern) throws IOException {
         final Pattern filePattern = Pattern.compile(pattern);
         return Files.walk(path).filter(p -> filePattern.matcher(p.getFileName().toString()).matches());
     }
 
-
     /**
      * Given a filename, of the versioned form "path-version.type" look at all the files matching
      * "path.*\.type" and find the one with the newest modified date.
      * @param path Path of file
      * @return the newest version
-     * @throws IOException
+     * @throws IOException If the path is not valid.
      */
     public static String findNewest(Path path) throws IOException {
         final String pattern = toPattern(path);
