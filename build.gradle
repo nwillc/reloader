@@ -22,7 +22,7 @@ dependencies {
 }
 
 group = 'com.github.nwillc'
-version = '0.0.3-SNAPSHOT'
+version = '1.0.0'
 targetCompatibility = '1.8'
 sourceCompatibility = '1.8'
 
