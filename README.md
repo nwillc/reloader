@@ -5,10 +5,10 @@ A java package to reload a running Java applications.
 
 ## Features
 
-- Based on run time information, intelligently recreate the applications command line.
+- Based on run time information, intelligently recreate the application's command line.
 - Exit the application, invoking the recreated command line as new process.
 - Execute shutdown code prior to exit.
-- If the application was packages as a single jar, it can determine if there is a newer
+- If the application was packaged as a single jar, it can determine if there is a newer
  version of the jar and use that instead, i.e. handle an update.
 - Can be registered as a signal handler.
 
@@ -26,7 +26,7 @@ Reloader.onSignal("USR2");
 
 ```
 
-That it. Do you need shutdown code, but to run the same version?
+That is it. Do you need shutdown code, but to run the same version?
  
 ```java 
  Reloader.onSignal("USR2", () -> { /* shutdiown code */ }, false);
