@@ -5,6 +5,7 @@ plugins {
     id 'maven-publish'
     id 'com.jfrog.bintray' version '1.7.3'
     id 'com.github.nwillc.vplugin' version '2.0.1'
+    id 'jacoco'
 }
 
 repositories {
@@ -93,5 +94,12 @@ bintray {
         licenses = ['ISC']
         labels = ['jdk8', 'reload']
         publicDownloadNumbers = true
+    }
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled = true // coveralls plugin depends on xml format report
+        html.enabled = true
     }
 }
