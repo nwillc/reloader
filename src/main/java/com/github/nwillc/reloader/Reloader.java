@@ -20,7 +20,6 @@ package com.github.nwillc.reloader;
 import org.pmw.tinylog.Logger;
 import sun.misc.Signal;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.reflect.Constructor;
@@ -30,10 +29,6 @@ import java.util.Arrays;
 import java.util.List;
 
 public final class Reloader {
-    /**
-     * Sun property pointing the main class and its arguments.
-     * Might not be defined on non Hotspot VM implementations.
-     */
     public static final String SUN_JAVA_COMMAND = "sun.java.command";
 
     private Reloader() {
@@ -62,70 +57,36 @@ public final class Reloader {
         vmArgs.stream().filter(s -> !s.equals("-agentlib")).forEach(newCommandLine::add);
         if (cmdArgs.get(0).endsWith(".jar")) {
             newCommandLine.add("-jar");
+        } else {
+            newCommandLine.add("-cp");
+            newCommandLine.add(System.getProperty("java.class.path"));
         }
-        cmdArgs.stream().forEach(newCommandLine::add);
+        cmdArgs.forEach(newCommandLine::add);
         return newCommandLine;
     }
 
-    public static void restartApplication(Runnable runBeforeRestart) {
+    public static void restartApplication(Runnable onExit) {
         try {
             final List<String> newCommandLine = newCommandLine(ManagementFactory.getRuntimeMXBean().getInputArguments(), Arrays.asList(System.getProperty(SUN_JAVA_COMMAND).split(" ")));
-//            // java binary
-//            String java = System.getProperty("java.home") + "/bin/java";
-//
-//            // vm arguments
-//
-//            StringBuilder vmArgsOneLine = new StringBuilder();
-//            for (String arg : vmArguments) {
-//                // if it's the agent argument : we ignore it otherwise the
-//                // address of the old application and the new one will be in conflict
-//                if (!arg.contains("-agentlib")) {
-//                    vmArgsOneLine.append(arg);
-//                    vmArgsOneLine.append(" ");
-//                }
-//            }
-//
-//            // init the command to execute, add the vm args
-//            final StringBuffer cmd = new StringBuffer(java + " " + vmArgsOneLine);
-//
-//            // program main and program arguments
-//            String[] mainCommand = System.getProperty(SUN_JAVA_COMMAND).split(" ");
-//
-//            // program main is a jar
-//            if (mainCommand[0].endsWith(".jar")) {
-//                // if it's a jar, add -jar mainJar
-//                cmd.append("-jar ").append(new File(mainCommand[0]).getPath());
-//            } else {
-//                // else it's a .class, add the classpath and mainClass
-//                cmd.append("-cp \"").append(System.getProperty("java.class.path")).append("\" ").append(mainCommand[0]);
-//            }
-//
-//            // finally add program arguments
-//            for (int i = 1; i < mainCommand.length; i++) {
-//                cmd.append(" ");
-//                cmd.append(mainCommand[i]);
-//            }
-
             Logger.info("Restart: " + newCommandLine);
-            // execute the command in a shutdown hook, to be sure that all the
-            // resources have been disposed before restarting the application
+
+            // Set up the command line to be executed on shutdown
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                 try {
                     Runtime.getRuntime().exec(newCommandLine.toArray(new String[]{}));
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Logger.error(e, "Failed to reload.");
                 }
             }));
 
-            // execute some custom code before restarting
-            if (runBeforeRestart != null) {
-                runBeforeRestart.run();
+            // If a onExit was provided run it.
+            if (onExit != null) {
+                onExit.run();
             }
 
             // exit
             System.exit(0);
         } catch (Exception e) {
-            // something went wrong
             throw new RuntimeException("Error while trying to restart the application", e);
         }
     }
