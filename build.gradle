@@ -75,28 +75,10 @@ publishing {
     }
 }
 
-//task ghJavadoc(type: Copy, dependsOn: javadoc) {
-//    from('build/docs/javadoc')
-//    into('docs/javadoc/')
-//}
-//
-//task ghStatic(type: Copy) {
-//    from('.') {
-//        include '*.md'
-//    }
-//    into('docs/')
-//}
-
 task ghPages(dependsOn: javadoc) {
     copy {
         from('build/docs/javadoc')
         into('docs/javadoc/')
-    }
-    copy {
-        from('.') {
-            include '*.md'
-        }
-        into('docs/')
     }
 }
 
