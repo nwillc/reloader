@@ -30,7 +30,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import static com.github.nwillc.reloader.FileUtils.findNewest;
-import static com.github.nwillc.reloader.FileUtils.toPattern;
 
 /**
  * Utility class providing methods for reloading the current Java application.
@@ -53,10 +52,11 @@ public final class Reloader {
     }
 
     /**
-     * Set up a Un*x signal handler to call {@link #restartApplication(Runnable,boolean)} when the signal
+     * Set up a Un*x signal handler to call {@link #restartApplication(Runnable, boolean)} when the signal
      * is received.
+     *
      * @param signalName Name of the signal.
-     * @param onExit A runnable to perform on exit.
+     * @param onExit     A runnable to perform on exit.
      * @param withNewest If a jar, should we find the newest?
      */
     public static void onSignal(final String signalName, Runnable onExit, boolean withNewest) {
@@ -96,7 +96,8 @@ public final class Reloader {
     /**
      * Restart the current application.  If a Runnable is provided, execute that first. If the application
      * was run from a single '-jar' jar, and withUpdate is true, look for the newest version of the jar.
-     * @param onExit Code to execute on shutdown.
+     *
+     * @param onExit     Code to execute on shutdown.
      * @param withUpdate Should an attempt be made to update to newest jar.
      */
     public static void restartApplication(final Runnable onExit, final boolean withUpdate) {

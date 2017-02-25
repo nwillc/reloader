@@ -25,6 +25,6 @@ public class ReloaderTest extends UtilityClassContract {
         assertThat(newCommandLine).contains("-jar");
         assertThat(newCommandLine).contains("src/test/resources/foo-1.2.blah.jar");
         assertThat(newCommandLine).contains(vmArgs.toArray(new String[]{}));
-        assertThat(newCommandLine).contains("-p","8080");
+        assertThat(newCommandLine).contains("-p", "8080");
     }
 }

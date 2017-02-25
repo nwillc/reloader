@@ -3,7 +3,6 @@ package com.github.nwillc.reloader;
 import com.github.nwillc.contracts.UtilityClassContract;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.jupiter.api.BeforeEach;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -52,7 +51,7 @@ public class FileUtilsTest extends UtilityClassContract {
                 Paths.get("./src/test/resources/foo-1.0.jar"),
                 Paths.get("./src/test/resources/foo-1.1.jar"),
                 Paths.get(NEWEST)
-                );
+        );
 
         files = FileUtils.ls(Paths.get("./src/test/resources"), ".*blah\\.jar");
         assertThat(files.count()).isEqualTo(1);

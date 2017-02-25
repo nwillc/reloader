@@ -39,6 +39,7 @@ public final class FileUtils {
      * Takes a path and attempts to return a regex pattern that handles any "version" of the file, for
      * example "foo/bar/file-1.0.txt" would yield "file.+\.txt" which would match other versions
      * such as "file-2.3.txt".
+     *
      * @param path file path
      * @return the resulting pattern
      */
@@ -48,7 +49,8 @@ public final class FileUtils {
 
     /**
      * List files in a directory that match a pattern.
-     * @param path  Path to the directory
+     *
+     * @param path    Path to the directory
      * @param pattern The regex pattern to match.
      * @return The files that match.
      * @throws IOException If the path can not be walked.
@@ -61,6 +63,7 @@ public final class FileUtils {
     /**
      * Given a filename, of the versioned form "path-version.type" look at all the files matching
      * "path.*\.type" and find the one with the newest modified date.
+     *
      * @param path Path of file
      * @return the newest version
      * @throws IOException If the path is not valid.
