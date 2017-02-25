@@ -1,7 +1,9 @@
 package com.github.nwillc.reloader;
 
 import com.github.nwillc.contracts.UtilityClassContract;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -13,9 +15,17 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 public class FileUtilsTest extends UtilityClassContract {
 
+    public static final String NEWEST = "./src/test/resources/foo-1.2.blah.jar";
+
     @Override
     public Class<?> getClassToTest() {
         return FileUtils.class;
+    }
+
+    @BeforeClass
+    public static void setUp() {
+        final Path path = Paths.get(NEWEST);
+        path.toFile().setLastModified(System.currentTimeMillis());
     }
 
     @Test
@@ -41,7 +51,7 @@ public class FileUtilsTest extends UtilityClassContract {
         assertThat(pathList).contains(
                 Paths.get("./src/test/resources/foo-1.0.jar"),
                 Paths.get("./src/test/resources/foo-1.1.jar"),
-                Paths.get("./src/test/resources/foo-1.2.blah.jar")
+                Paths.get(NEWEST)
                 );
 
         files = FileUtils.ls(Paths.get("./src/test/resources"), ".*blah\\.jar");
