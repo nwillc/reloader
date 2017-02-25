@@ -26,6 +26,7 @@ import java.lang.management.ManagementFactory;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public final class Reloader {
@@ -67,53 +68,50 @@ public final class Reloader {
     }
 
     public static void restartApplication(Runnable runBeforeRestart) {
-        restartApplication(runBeforeRestart, ManagementFactory.getRuntimeMXBean().getInputArguments());
-    }
-
-    public static void restartApplication(Runnable runBeforeRestart, List<String> vmArguments) {
         try {
-            // java binary
-            String java = System.getProperty("java.home") + "/bin/java";
+            final List<String> newCommandLine = newCommandLine(ManagementFactory.getRuntimeMXBean().getInputArguments(), Arrays.asList(System.getProperty(SUN_JAVA_COMMAND).split(" ")));
+//            // java binary
+//            String java = System.getProperty("java.home") + "/bin/java";
+//
+//            // vm arguments
+//
+//            StringBuilder vmArgsOneLine = new StringBuilder();
+//            for (String arg : vmArguments) {
+//                // if it's the agent argument : we ignore it otherwise the
+//                // address of the old application and the new one will be in conflict
+//                if (!arg.contains("-agentlib")) {
+//                    vmArgsOneLine.append(arg);
+//                    vmArgsOneLine.append(" ");
+//                }
+//            }
+//
+//            // init the command to execute, add the vm args
+//            final StringBuffer cmd = new StringBuffer(java + " " + vmArgsOneLine);
+//
+//            // program main and program arguments
+//            String[] mainCommand = System.getProperty(SUN_JAVA_COMMAND).split(" ");
+//
+//            // program main is a jar
+//            if (mainCommand[0].endsWith(".jar")) {
+//                // if it's a jar, add -jar mainJar
+//                cmd.append("-jar ").append(new File(mainCommand[0]).getPath());
+//            } else {
+//                // else it's a .class, add the classpath and mainClass
+//                cmd.append("-cp \"").append(System.getProperty("java.class.path")).append("\" ").append(mainCommand[0]);
+//            }
+//
+//            // finally add program arguments
+//            for (int i = 1; i < mainCommand.length; i++) {
+//                cmd.append(" ");
+//                cmd.append(mainCommand[i]);
+//            }
 
-            // vm arguments
-
-            StringBuilder vmArgsOneLine = new StringBuilder();
-            for (String arg : vmArguments) {
-                // if it's the agent argument : we ignore it otherwise the
-                // address of the old application and the new one will be in conflict
-                if (!arg.contains("-agentlib")) {
-                    vmArgsOneLine.append(arg);
-                    vmArgsOneLine.append(" ");
-                }
-            }
-
-            // init the command to execute, add the vm args
-            final StringBuffer cmd = new StringBuffer(java + " " + vmArgsOneLine);
-
-            // program main and program arguments
-            String[] mainCommand = System.getProperty(SUN_JAVA_COMMAND).split(" ");
-
-            // program main is a jar
-            if (mainCommand[0].endsWith(".jar")) {
-                // if it's a jar, add -jar mainJar
-                cmd.append("-jar ").append(new File(mainCommand[0]).getPath());
-            } else {
-                // else it's a .class, add the classpath and mainClass
-                cmd.append("-cp \"").append(System.getProperty("java.class.path")).append("\" ").append(mainCommand[0]);
-            }
-
-            // finally add program arguments
-            for (int i = 1; i < mainCommand.length; i++) {
-                cmd.append(" ");
-                cmd.append(mainCommand[i]);
-            }
-
-            Logger.info("Restart: " + cmd.toString());
+            Logger.info("Restart: " + newCommandLine);
             // execute the command in a shutdown hook, to be sure that all the
             // resources have been disposed before restarting the application
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                 try {
-                    Runtime.getRuntime().exec(cmd.toString());
+                    Runtime.getRuntime().exec(newCommandLine.toArray(new String[]{}));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
