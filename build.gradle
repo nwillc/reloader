@@ -75,6 +75,11 @@ publishing {
     }
 }
 
+task publishJavadoc(type: Copy) {
+    from('build/docs/javadoc')
+    into('docs/javadoc')
+}
+
 bintrayUpload.onlyIf { !project.version.toString().endsWith('SNAPSHOT') }
 
 bintray {

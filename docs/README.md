@@ -1,5 +1,8 @@
 
 # Reloader
 
-A java package providing reloading and upgrading for java applications
+A java package providing reloading and upgrading for java applications.
+
+[javadoc](javadoc/)
+
 
