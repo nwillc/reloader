@@ -9,9 +9,17 @@ import java.util.List;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 public class ReloaderTest extends UtilityClassContract {
+
+
     @Override
     public Class<?> getClassToTest() {
         return Reloader.class;
+    }
+
+    @Test
+    public void getProcessPid() throws Exception {
+        final int pid = Reloader.getProcessPid();
+        assertThat(pid).isGreaterThan(1);
     }
 
     @Test
@@ -26,5 +34,10 @@ public class ReloaderTest extends UtilityClassContract {
         assertThat(newCommandLine).contains("src/test/resources/foo-1.2.blah.jar");
         assertThat(newCommandLine).contains(vmArgs.toArray(new String[]{}));
         assertThat(newCommandLine).contains("-p", "8080");
+    }
+
+    @Test
+    public void testOnSignal() throws Exception {
+        Reloader.onSignal("USR2");
     }
 }

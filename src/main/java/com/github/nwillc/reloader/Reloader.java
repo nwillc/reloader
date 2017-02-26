@@ -19,9 +19,13 @@ package com.github.nwillc.reloader;
 
 import org.pmw.tinylog.Logger;
 import sun.misc.Signal;
+import sun.reflect.Reflection;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.lang.management.ManagementFactory;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -47,8 +51,24 @@ public final class Reloader {
     private Reloader() {
     }
 
+    /**
+     * Get the proccess id of the current process. Some JVM's may not provide this information.
+     * @return current process id
+     * @throws UnsupportedOperationException if the JVM does implementation doesn't provide the information.
+     */
+    public static int getProcessPid() {
+        String pidStr = ManagementFactory.getRuntimeMXBean().getName();
+
+        if (pidStr.contains("@")) {
+            return Integer.parseInt(pidStr.split("@")[0]);
+        }
+        else {
+            throw new UnsupportedOperationException("JVM does not provide proccess id information.");
+        }
+    }
+
     public static void onSignal(final String signalName) {
-        onSignal(signalName, null, true);
+        onSignal(signalName, null, true,"reloader.pid");
     }
 
     /**
@@ -58,12 +78,23 @@ public final class Reloader {
      * @param signalName Name of the signal.
      * @param onExit     A runnable to perform on exit.
      * @param withNewest If a jar, should we find the newest?
+     * @param pidFile the name of a file to write the process id too
      */
-    public static void onSignal(final String signalName, Runnable onExit, boolean withNewest) {
+    public static void onSignal(final String signalName, Runnable onExit, boolean withNewest, String pidFile) {
         Signal sig = new Signal(signalName);
         Signal.handle(sig, signal -> {
             restartApplication(onExit, withNewest);
         });
+        if (pidFile != null) {
+            final Path pidFilePath = Paths.get(pidFile);
+            try {
+                Files.deleteIfExists(pidFilePath);
+                Files.createFile(pidFilePath);
+                Files.write(pidFilePath, String.format("%d\n", getProcessPid()).getBytes());
+            } catch (IOException e) {
+                throw new UncheckedIOException("Can not create pid file: " + pidFile, e);
+            }
+        }
     }
 
     static List<String> newCommandLine(List<String> vmArgs, List<String> cmdArgs, boolean withUpdate) {

@@ -6,3 +6,4 @@ env.sh
 *~
 out
 env.sh
+*.pid

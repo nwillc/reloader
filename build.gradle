@@ -22,8 +22,12 @@ dependencies {
             'junit:junit:' + junit_version
 }
 
+configurations {
+    all*.exclude group: 'org.junit.jupiter'
+}
+
 group = 'com.github.nwillc'
-version = '1.0.1-SNAPSHOT'
+version = '1.1.0'
 targetCompatibility = '1.8'
 sourceCompatibility = '1.8'
 
