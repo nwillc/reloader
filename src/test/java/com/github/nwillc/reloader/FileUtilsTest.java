@@ -1,6 +1,7 @@
 package com.github.nwillc.reloader;
 
 import com.github.nwillc.contracts.UtilityClassContract;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -21,8 +22,8 @@ public class FileUtilsTest extends UtilityClassContract {
         return FileUtils.class;
     }
 
-    @BeforeClass
-    public static void setUp() {
+    @Before
+    public void setUp() {
         final Path path = Paths.get(NEWEST);
         path.toFile().setLastModified(System.currentTimeMillis());
     }
