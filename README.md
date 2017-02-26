@@ -18,6 +18,10 @@ It is designed for restarting and updating running applications.
 
 ## Example Use
 
+The artifacts are on JCenter.
+ 
+ [![Download](http://shields-nwillc.rhcloud.com/shield/jcenter?path=nwillc&package=reloader)](http://shields-nwillc.rhcloud.com/homepage/jcenter?path=nwillc&package=reloader)
+
 Suppose you want your application to restart from the latest version when the process receives a `USR2` signal.
 In your Java `main` simply:
 
